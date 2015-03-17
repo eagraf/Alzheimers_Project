@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dip"
         android:layout_marginRight="10dip"
-        android:text="Latitude:"
+        android:text="Longitude:"
         android:textSize="20sp" >
     </TextView>
 
@@ -41,4 +41,29 @@
         android:layout_marginRight="10dip"
         android:textSize="20sp" >
     </TextView>
+
+    <TextView
+        android:id="@+id/TextViewAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:text="Address:"
+        android:textSize="20sp" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/TextViewAddressString"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:textSize="20sp" >
+    </TextView>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Map View"
+        android:onClick="openMap" />
 </LinearLayout>
