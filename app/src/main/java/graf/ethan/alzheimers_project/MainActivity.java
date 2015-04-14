@@ -1,63 +1,69 @@
 package graf.ethan.alzheimers_project;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.support.v7.app.ActionBarActivity;
+import android.location.LocationProvider;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.Api;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationListener;
 
-import java.io.IOException;
-import java.util.ArrayList;
+public class MainActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks,
+        GooglePlayServicesClient.OnConnectionFailedListener,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
 
-
-public class MainActivity extends ActionBarActivity implements LocationListener {
-    private TextView latituteField;
+    private TextView latitudeField;
     private TextView longitudeField;
     private TextView addressField;
-    private LocationManager locationManager;
-    private Geocoder geoCoder;
-    private String provider;
+
+    private GoogleApiClient mGoogleApiClient;
+    private Location mCurrentLocation;
+    public static final String TAG = LocationProvider.class.getSimpleName();
+
+    private LocationRequest mLocationRequest;
+
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        latituteField = (TextView) findViewById(R.id.TextViewLatitudeCoordinate);
+        latitudeField = (TextView) findViewById(R.id.TextViewLatitudeCoordinate);
         longitudeField = (TextView) findViewById(R.id.TextViewLongitudeCoordinate);
         addressField = (TextView) findViewById(R.id.TextViewAddressString);
 
-        // Get the location manager
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        // Define the criteria how to select the locatioin provider -> use
-        // default
-        Criteria criteria = new Criteria();
-        provider = locationManager.getBestProvider(criteria, false);
-        Location location = locationManager.getLastKnownLocation(provider);
+        LocationAlarm.setAlarm(this);
 
-        geoCoder = new Geocoder(this);
 
-        // Initialize the location fields
-        if (location != null) {
-            System.out.println("Provider " + provider + " has been selected.");
-            onLocationChanged(location);
-        } else {
-            latituteField.setText("Location not available");
-            longitudeField.setText("Location not available");
-            addressField.setText("Address not available");
+        Toast.makeText(this, "Alarm Scheduled", Toast.LENGTH_LONG)
+                .show();
+
+        buildGoogleApiClient();
+        createLocationRequest();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
         }
     }
 
@@ -65,56 +71,70 @@ public class MainActivity extends ActionBarActivity implements LocationListener 
     @Override
     protected void onResume() {
         super.onResume();
-        locationManager.requestLocationUpdates(provider, 400, 1, this);
+        if (mGoogleApiClient.isConnected()) {
+            startLocationUpdates();
+        }
     }
 
     /* Remove the locationlistener updates when Activity is paused */
     @Override
     protected void onPause() {
         super.onPause();
-        locationManager.removeUpdates(this);
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    public void openMap(View view) {
+
+        Toast.makeText(this, "Opening Map", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, MapActivity.class);
+        startActivity(intent);
+    }
+
+    public synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    public void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    protected void startLocationUpdates() {
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        double lat = location.getLatitude();
-        double lng = location.getLongitude();
-        Address address = null;
-        try {
-            address = ((ArrayList<Address>) geoCoder.getFromLocation(location.getLatitude(), location.getLongitude(), 16)).get(0);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        mCurrentLocation = location;
+        latitudeField.setText(String.valueOf(mCurrentLocation.getLatitude()));
+        longitudeField.setText(String.valueOf(mCurrentLocation.getLongitude()));
+    }
 
-        latituteField.setText(String.valueOf(lat));
-        longitudeField.setText(String.valueOf(lng));
-        if(address != null) {
-            addressField.setText(address.getAddressLine(0));
-        }
-        else {
-            addressField.setText("Address not available");
-        }
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
+    public void onConnected(Bundle bundle) {
+        startLocationUpdates();
     }
 
     @Override
-    public void onProviderEnabled(String provider) {
-        Toast.makeText(this, "Enabled new provider " + provider,
-                Toast.LENGTH_SHORT).show();
+    public void onConnectionSuspended(int i) {
 
     }
 
     @Override
-    public void onProviderDisabled(String provider) {
-        Toast.makeText(this, "Disabled provider " + provider,
-                Toast.LENGTH_SHORT).show();
-    }
-
-    public void openMap(View view) {
-        Intent intent = new Intent(this, MapActivity.class);
-        startActivity(intent);
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.i(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
     }
 }
