@@ -50,6 +50,9 @@ public class LocationRetriever implements GoogleApiClient.ConnectionCallbacks,
         //Send a small notification.
         Toast.makeText(context, "Location: " + mCurrentLocation.getLongitude() + ", " + mCurrentLocation.getLatitude(), Toast.LENGTH_LONG).show();
 
+        //Set the last location in shared preferences.
+        MapPreferenceManager.writeLastLocation(context, mCurrentLocation);
+
         //Release the WakeLock. This is important because it ensures that the battery is not drained excessively.
         wakeLock.release();
     }
