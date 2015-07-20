@@ -5,8 +5,17 @@
     android:orientation="vertical">
 
     <Button
+        android:id="@+id/mapButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Map View"
         android:onClick="openMap" />
+
+    <Button
+        android:id="@+id/toggleAlarmButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel Alarm"
+        android:onClick="toggleAlarm"/>
+
 </LinearLayout>

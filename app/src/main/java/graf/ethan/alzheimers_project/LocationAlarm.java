@@ -38,7 +38,7 @@ public class LocationAlarm extends BroadcastReceiver {
                 SystemClock.elapsedRealtime() + 60000, 60000, pi);
     }
 
-    public void cancelAlarm(Context context) {
+    public static void cancelAlarm(Context context) {
         //Cancel the alarm.
         Intent intent = new Intent(context, LocationAlarm.class);
         PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);

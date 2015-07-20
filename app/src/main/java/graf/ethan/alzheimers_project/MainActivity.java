@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity {
@@ -26,5 +27,19 @@ public class MainActivity extends ActionBarActivity {
         Toast.makeText(this, "Opening Map", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
+    }
+
+    /*Toggles the alarm on or off*/
+    public void toggleAlarm(View view) {
+        if(((Button) findViewById(R.id.toggleAlarmButton)).getText().equals("Cancel Alarm")) {
+            Toast.makeText(this, "Alarm Cancelled", Toast.LENGTH_LONG).show();
+            LocationAlarm.cancelAlarm(this);
+            ((Button) findViewById(R.id.toggleAlarmButton)).setText("Set Alarm");
+        }
+        else if(((Button) findViewById(R.id.toggleAlarmButton)).getText().equals("Set Alarm")) {
+            Toast.makeText(this, "Alarm Set", Toast.LENGTH_LONG).show();
+            LocationAlarm.setAlarm(this);
+            ((Button) findViewById(R.id.toggleAlarmButton)).setText("Cancel Alarm");
+        }
     }
 }
