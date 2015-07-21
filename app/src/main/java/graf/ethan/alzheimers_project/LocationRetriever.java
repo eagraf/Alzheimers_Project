@@ -11,6 +11,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
+
+
+import java.util.ArrayList;
+
 /**
  * Created by Ethan on 4/13/2015.
  * This class is responsible for calling the Google Api Client and retrieving the location.
@@ -47,11 +53,22 @@ public class LocationRetriever implements GoogleApiClient.ConnectionCallbacks,
         Location mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
 
-        //Send a small notification.
-        Toast.makeText(context, "Location: " + mCurrentLocation.getLongitude() + ", " + mCurrentLocation.getLatitude(), Toast.LENGTH_LONG).show();
-
         //Set the last location in shared preferences.
         MapPreferenceManager.writeLastLocation(context, mCurrentLocation);
+        ArrayList<String> names = new ArrayList<>(MapPreferenceManager.getNames(context));
+        boolean safe = false;
+        int i = 0;
+        while(!safe && i < names.size()) {
+            SafeZone zone = MapPreferenceManager.getSafeZone(context, names.get(i));
+            if(PolyUtil.containsLocation(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), zone.getPoints(), true)) {
+                safe = true;
+                Toast.makeText(context, "SAFE", Toast.LENGTH_LONG).show();
+            }
+            i++;
+        }
+        if(!safe) {
+            Toast.makeText(context, "UNSAFE", Toast.LENGTH_LONG).show();
+        }
 
         //Release the WakeLock. This is important because it ensures that the battery is not drained excessively.
         wakeLock.release();

@@ -10,10 +10,10 @@
         android:layout_height="match_parent"
         class="com.google.android.gms.maps.MapFragment" />
 
-    <!--The main floating action button-->
+    <!--Define a new safe zone-->
     <android.support.design.widget.FloatingActionButton
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/group_button_add"
+        android:id="@+id/define_safe_zone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -22,7 +22,32 @@
         android:layout_marginRight="48dp"
         android:layout_marginBottom="32dp"
         android:layout_gravity="bottom|right"
-        android:onClick="newGroup"
+        android:onClick="defineSafeZone"
+        android:src="@drawable/ic_action_new"
+        app:elevation="4dp"/>
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_height="wrap_content"
+        android:layout_width="128dp"
+        android:background="@color/Clear"
+        android:layout_alignParentRight="true" />
+
+    <!--Confirm safe zone-->
+    <android.support.design.widget.FloatingActionButton
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="48dp"
+        android:layout_marginBottom="32dp"
+        android:layout_gravity="bottom|right"
+        android:onClick="confirmSafeZone"
+        android:src="@drawable/ic_action_accept"
+        android:visibility="gone"
         app:elevation="4dp"/>
 
 </RelativeLayout> 
