@@ -25,6 +25,7 @@ public class MapPreferenceManager {
         editor.commit();
     }
 
+    //Read the last location that was retrieved by Google Maps.
     public static Location readLastLocation(Context context) {
         SharedPreferences preferences = context.getSharedPreferences("alzheimers_location_data", Context.MODE_PRIVATE);
         //Convert long values back to double values.

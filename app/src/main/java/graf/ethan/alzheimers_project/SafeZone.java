@@ -37,14 +37,17 @@ public class SafeZone {
         this.name = name;
     }
 
+    //Display the bounds on the Google Map View.
     public void display(GoogleMap map) {
         this.map = map;
         this.polyLine = map.addPolyline(new PolylineOptions());
 
+        //Close the poly line and show it.
         points.add(points.get(0));
         polyLine.setPoints(points);
     }
 
+    //Add a marker (a corner point in the boundary definition.
     public void addMarker(LatLng marker) {
         points.add(marker);
         markers.add(map.addMarker(new MarkerOptions()
@@ -68,6 +71,7 @@ public class SafeZone {
         }
     }
 
+    //Remove from the display.
     public void remove() {
         polyLine.setVisible(false);
     }
