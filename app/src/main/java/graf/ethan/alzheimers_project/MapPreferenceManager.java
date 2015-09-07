@@ -2,12 +2,17 @@ package graf.ethan.alzheimers_project;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -37,6 +42,23 @@ public class MapPreferenceManager {
         location.setLongitude(longitude);
         location.setLatitude(latitude);
         return location;
+    }
+
+    public static String readLastLocationName(Context context) {
+        Location location = MapPreferenceManager.readLastLocation(context);
+
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        try {
+            List<Address> listAddresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            if(null!=listAddresses&&listAddresses.size()>0){
+                String _Location = listAddresses.get(0).getLocality();
+                System.out.println(_Location);
+                return _Location;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     //Write a safe zone to shared preferences.

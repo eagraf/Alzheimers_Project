@@ -6,9 +6,14 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Map;
+
 public class MainActivity extends ActionBarActivity {
+
+    EnvironmentState state;
 
 
     /** Called when the activity is first created. */
@@ -21,6 +26,9 @@ public class MainActivity extends ActionBarActivity {
         LocationAlarm.setAlarm(this);
         Toast.makeText(this, "Alarm Scheduled", Toast.LENGTH_LONG)
                 .show();
+
+        state = new EnvironmentState(this, MapPreferenceManager.readLastLocationName(this));
+        showWeather();
     }
 
     /* Open a Google Maps activity */
@@ -48,5 +56,11 @@ public class MainActivity extends ActionBarActivity {
             LocationAlarm.setAlarm(this);
             ((Button) findViewById(R.id.toggleAlarmButton)).setText("Cancel Alarm");
         }
+    }
+
+    public void showWeather() {
+        ((TextView) findViewById(R.id.temperature)).setText(state.getTemperature() + " " + state.getUnits());
+        ((TextView) findViewById(R.id.location)).setText(state.getLocation());
+        ((TextView) findViewById(R.id.description)).setText(state.getDescription());
     }
 }
